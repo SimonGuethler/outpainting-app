@@ -1,0 +1,9 @@
+version: "3"
+name: stsiguet
+
+services:
+  outpainting-app:
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: stsiguet-outpainting-app
