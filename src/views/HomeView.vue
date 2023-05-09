@@ -1,29 +1,22 @@
 <template>
     <main>
 
-        <div class="row pb-5">
-            <div
-                v-if="!loading && image && image.length > 0"
-                class="flex flex-col"
-                style="width: 100%;"
-            >
+        <div class="row pb-5 flex flex-direction-row" style="width: 90vw">
+            <template v-for="(image, index) in Object.entries(images)" :key="index">
                 <va-image
+                    v-if="image && image.length > 0"
                     fit="contain"
-                    class="w-full md:w-1/2 lg:w-1/3"
-                    style="max-height: 500px; width: 90vw"
-                    :src="image"
+                    class="flex"
+                    style="max-height: 512px; max-width: 512px;"
+                    :src="image[1]"
+                    lazy
                 />
-            </div>
-
-            <div
-                v-else
-                class="flex flex-col flex-center justify-center"
-                style="width: 100%;"
-            >
                 <VaSkeleton
-                    style="height: 500px; width: 90vw"
+                    v-else
+                    class="flex"
+                    style="height: 512px; max-width: 512px;"
                 />
-            </div>
+            </template>
         </div>
 
         <div v-if="loading" class="row">
@@ -102,12 +95,12 @@
 
 <script setup lang="ts">
 import { VaButton, VaImage, VaInput, VaProgressCircle } from 'vuestic-ui';
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 
 const loading = ref<boolean>(true);
-const image = ref<string>('');
 const prompt = ref<string>('');
+const images = reactive<{ [key: string]: string }>({});
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:8000',
@@ -120,10 +113,15 @@ const generateImage = async () => {
     await init();
 }
 
-const loadImage = async () => {
+const loadImage = async (index = 0) => {
     loading.value = true;
+    images[index] = '';
+
     const response = await axiosInstance.get('image', {
-        responseType: 'arraybuffer'
+        responseType: 'arraybuffer',
+        params: {
+            img: index,
+        },
     }).catch(() => {
         loading.value = false;
     })
@@ -133,8 +131,26 @@ const loadImage = async () => {
         .map(byte => String.fromCharCode(byte)).join('');
     const dataUrl = 'data:image/png;base64,' + btoa(binary);
 
-    image.value = dataUrl;
+    images[index] = dataUrl;
     loading.value = false;
+}
+
+const loadImages = async () => {
+    const count = await getImageCount();
+    if (!count) return;
+
+    for (let i = 0; i < count; i++) {
+        await loadImage(i);
+    }
+    loading.value = false;
+}
+
+const getImageCount = async (): Promise<number | undefined> => {
+    const response = await axiosInstance.get('image_count').catch(() => {
+    })
+    if (!response || !response.data) return;
+
+    return Number(response.data);
 }
 
 const loadPrompts = async () => {
@@ -155,14 +171,14 @@ const reset = async () => {
 }
 
 const resetVariables = () => {
-    image.value = '';
+    Object.keys(images).forEach(key => delete images[key]);
     prompt.value = '';
 }
 
 const init = async () => {
     await Promise.all([
         loadPrompts(),
-        loadImage(),
+        loadImages(),
     ]);
 }
 
