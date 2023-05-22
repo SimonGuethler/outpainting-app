@@ -8,8 +8,8 @@
                 :src="item.data"
                 :alt="item.prompt"
                 :title="item.prompt"
-                loading="lazy"
                 style="height: 75vh; width: 75vh; pointer-events: none;"
+                lazy
             />
             <div class="text">
                 {{ item.prompt }}
@@ -57,8 +57,8 @@ const dataArray = computed<{ prompt: string, data: string }[]>(() => {
 });
 
 const axiosInstance = axios.create({
-    baseURL: 'http://10.40.2.30:8000',
-    // baseURL: 'http://localhost:8000',
+    // baseURL: 'http://10.40.2.30:8000',
+    baseURL: 'http://localhost:8000',
 });
 
 
@@ -69,7 +69,7 @@ const generateImage = async () => {
     await init();
 }
 
-const loadImage = async (index = 0) => {
+const loadImageBlob = async (index = 0) => {
     loading.value = true;
     images[index] = '';
 
@@ -88,6 +88,23 @@ const loadImage = async (index = 0) => {
     const dataUrl = 'data:image/png;base64,' + btoa(binary);
 
     images[index] = dataUrl;
+    loading.value = false;
+}
+
+const loadImage = async (index = 0) => {
+    loading.value = true;
+    images[index] = '';
+
+    const response = await axiosInstance.get('image', {
+        params: {
+            img: index,
+        },
+    }).catch(() => {
+        loading.value = false;
+    })
+    if (!response || !response.data) return;
+
+    images[index] = response.data;
     loading.value = false;
 }
 
