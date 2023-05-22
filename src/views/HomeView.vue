@@ -57,8 +57,8 @@ const dataArray = computed<{ prompt: string, data: string }[]>(() => {
 });
 
 const axiosInstance = axios.create({
-    // baseURL: 'http://10.40.2.30:8000',
-    baseURL: 'http://localhost:8000',
+    baseURL: 'http://10.40.2.30:8000',
+    // baseURL: 'http://localhost:8000',
 });
 
 
