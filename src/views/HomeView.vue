@@ -46,8 +46,8 @@ const showBorder = ref<boolean>(false);
 const dataArray = reactive<DataType[]>([])
 
 const axiosInstance = axios.create({
-    baseURL: 'http://10.40.2.30:8000',
-    // baseURL: 'http://localhost:8000',
+    // baseURL: 'http://10.40.2.30:8000',
+    baseURL: 'http://localhost:8000',
 });
 
 interface DataType {
@@ -123,7 +123,7 @@ const startScroll = (direction: ScrollDirection) => {
     if (requestId) return;
 
     const container = document.getElementById("scrollable")!;
-    const scrollAmount = 0.25;
+    const scrollAmount = 1;
 
     const scroll = () => {
         if (direction === ScrollDirection.Left) {
