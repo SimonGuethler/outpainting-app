@@ -97,7 +97,7 @@ const enableHorizontalScroll = () => {
         event.preventDefault();
         const scrollAmount = event.deltaY || event.deltaX;
         scrollable.scrollLeft += scrollAmount;
-    });
+    }, { passive: true });
 }
 
 const scrollToRight = () => {
@@ -171,7 +171,7 @@ const addKeyShortcuts = () => {
         }
     }
 
-    document.addEventListener("keydown", handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress, { passive: true });
 }
 
 const init = async () => {
@@ -206,7 +206,7 @@ onMounted(async () => {
     font-size: 2.5rem;
     padding-inline: 2rem;
     margin-top: 2rem;
-    color: antiquewhite;
+    color: #f6dab6;
     white-space: pre-wrap;
     text-align: center;
     line-height: 1.25;
@@ -219,7 +219,7 @@ onMounted(async () => {
     left: 50%;
     transform: translateX(-50%);
     padding: 0.5rem;
-    border: 1px solid antiquewhite;
+    border: 1px solid #f6dab6;
     border-bottom: none;
     border-radius: 10px 10px 0 0;
 }
