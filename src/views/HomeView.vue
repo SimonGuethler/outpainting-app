@@ -5,7 +5,7 @@
         >
             <va-image
                 :class="{imageBorder: showBorder}"
-                :src="item.data"
+                :src="item.image"
                 :alt="item.prompt"
                 :title="item.prompt"
                 style="height: 75vh; width: 75vh; pointer-events: none;"
@@ -35,88 +35,40 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 
-const loading = ref<boolean>(true);
-const prompt = ref<string>('');
-const images = reactive<{ [key: string]: string }>({});
 const imageCount = ref<number>(0);
 
 const showDevBar = ref<boolean>(false);
 const showBorder = ref<boolean>(false);
 
-const promptArray = computed<string[]>(() =>
-    prompt.value.split('\n').map((line) => line.trim()).filter((line) => line.length > 0)
-);
-const dataArray = computed<{ prompt: string, data: string }[]>(() => {
-    return Object.entries(images).map(([key, value]) => ({
-        prompt: promptArray.value[Number(key)],
-        data: value,
-    }));
-});
+const dataArray = reactive<DataType[]>([])
 
 const axiosInstance = axios.create({
-    baseURL: 'http://10.40.2.30:8000',
-    // baseURL: 'http://localhost:8000',
+    // baseURL: 'http://10.40.2.30:8000',
+    baseURL: 'http://localhost:8000',
 });
 
+interface DataType {
+    image: string;
+    prompt: string;
+}
 
 const generateImage = async () => {
-    loading.value = true;
     await axiosInstance.get('generate').catch()
     resetVariables();
     await init();
 }
 
-const loadImageBlob = async (index = 0) => {
-    loading.value = true;
-    images[index] = '';
-
-    const response = await axiosInstance.get('image', {
-        responseType: 'arraybuffer',
-        params: {
-            img: index,
-        },
-    }).catch(() => {
-        loading.value = false;
+const loadData = async () => {
+    const response = await axiosInstance.get('data').catch(() => {
     })
     if (!response || !response.data) return;
+    const data: DataType[] = response.data;
 
-    const binary = Array.from(new Uint8Array(response.data))
-        .map(byte => String.fromCharCode(byte)).join('');
-    const dataUrl = 'data:image/png;base64,' + btoa(binary);
-
-    images[index] = dataUrl;
-    loading.value = false;
-}
-
-const loadImage = async (index = 0) => {
-    loading.value = true;
-    images[index] = '';
-
-    const response = await axiosInstance.get('image', {
-        params: {
-            img: index,
-        },
-    }).catch(() => {
-        loading.value = false;
-    })
-    if (!response || !response.data) return;
-
-    images[index] = response.data;
-    loading.value = false;
-}
-
-const loadImages = async () => {
-    const count = await getImageCount();
-    if (!count) return;
-
-    for (let i = 0; i < count; i++) {
-        await loadImage(i);
-    }
-    loading.value = false;
-    scrollToRight();
+    resetVariables();
+    dataArray.push(...data);
 }
 
 const getImageCount = async (): Promise<number | undefined> => {
@@ -130,26 +82,13 @@ const getImageCount = async (): Promise<number | undefined> => {
     return count;
 }
 
-const loadPrompts = async () => {
-    const response = await axiosInstance.get('prompts').catch(() => {
-    })
-    if (!response || !response.data) return;
-
-    const prompts: string[] = [];
-    for (let [_, value] of response.data.entries()) {
-        prompts.push(value);
-    }
-    prompt.value = prompts.join('\n');
-}
-
 const reset = async () => {
     resetVariables();
     await axiosInstance.get('reset').catch()
 }
 
 const resetVariables = () => {
-    Object.keys(images).forEach(key => delete images[key]);
-    prompt.value = '';
+    dataArray.splice(0);
 }
 
 const enableHorizontalScroll = () => {
@@ -232,10 +171,8 @@ const addKeyShortcuts = () => {
 }
 
 const init = async () => {
-    await Promise.all([
-        loadPrompts(),
-        loadImages(),
-    ]);
+    await loadData();
+    scrollToRight();
 }
 
 onMounted(async () => {
