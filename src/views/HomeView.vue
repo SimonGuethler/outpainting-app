@@ -91,6 +91,14 @@ const resetVariables = () => {
     dataArray.splice(0);
 }
 
+const pollData = () => {
+    setInterval(async () => {
+        const oldImageCount = imageCount.value;
+        await getImageCount();
+        if (oldImageCount !== imageCount.value) loadData();
+    }, 5000);
+}
+
 const enableHorizontalScroll = () => {
     const scrollable = document.getElementById("scrollable");
     scrollable?.addEventListener("wheel", (event) => {
@@ -200,6 +208,7 @@ onMounted(async () => {
     await init();
     enableHorizontalScroll();
     addKeyShortcuts();
+    pollData();
 });
 
 </script>
