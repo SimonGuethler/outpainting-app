@@ -148,15 +148,19 @@ const addKeyShortcuts = () => {
             showDevBar.value = !showDevBar.value;
         }
         if (event.keyCode === 81) { // Q
+            stopScroll();
             scrollToLeft();
         }
         if (event.keyCode === 69) { // E
+            stopScroll();
             scrollToRight();
         }
         if (event.keyCode === 65) { // A
+            stopScroll();
             startScroll(ScrollDirection.Left);
         }
         if (event.keyCode === 68) { // D
+            stopScroll();
             startScroll(ScrollDirection.Right);
         }
         if (event.keyCode === 83) { // S
