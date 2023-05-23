@@ -112,6 +112,12 @@ const scrollToLeft = () => {
     scrollable.scrollLeft = 0;
 }
 
+const scrollAmount = (amount: number) => {
+    const scrollable = document.getElementById("scrollable");
+    if (!scrollable) return;
+    scrollable.scrollLeft += amount;
+}
+
 enum ScrollDirection {
     Left,
     Right,
@@ -143,6 +149,8 @@ function stopScroll() {
 }
 
 const addKeyShortcuts = () => {
+    const scrollArrowAmount = 700;
+
     const handleKeyPress = (event: { keyCode: number; }) => {
         if (event.keyCode === 84) { // T
             showDevBar.value = !showDevBar.value;
@@ -168,6 +176,14 @@ const addKeyShortcuts = () => {
         }
         if (event.keyCode === 71) { // G
             showBorder.value = !showBorder.value;
+        }
+        if (event.keyCode === 37) { // left arrow
+            stopScroll();
+            scrollAmount(-scrollArrowAmount);
+        }
+        if (event.keyCode === 39) { // right arrow
+            stopScroll();
+            scrollAmount(scrollArrowAmount);
         }
     }
 
