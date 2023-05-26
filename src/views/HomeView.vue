@@ -7,8 +7,7 @@
                 :class="{imageBorder: showBorder}"
                 :src="item.image"
                 :alt="item.prompt"
-                :title="item.prompt"
-                style="height: 75vh; width: 75vh; pointer-events: none;"
+                style="height: 75vh; width: 75vh;"
                 lazy
             />
             <div class="text">
