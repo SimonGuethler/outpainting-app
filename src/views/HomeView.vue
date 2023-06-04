@@ -11,7 +11,7 @@
                 lazy
             />
             <div class="text">
-                {{ item.prompt }}
+                {{ getTitle(item) }}
             </div>
         </div>
     </main>
@@ -45,13 +45,21 @@ const showBorder = ref<boolean>(false);
 const dataArray = reactive<DataType[]>([])
 
 const axiosInstance = axios.create({
-    baseURL: 'http://10.40.2.30:8000',
-    // baseURL: 'http://localhost:8000',
+    // baseURL: 'http://10.40.2.30:8000',
+    baseURL: 'http://localhost:8000',
 });
 
 interface DataType {
     image: string;
     prompt: string;
+    date: string;
+    source: string;
+}
+
+const getTitle = (item: DataType) => {
+    if (!item) return '';
+    if (item.prompt === '-') return item.prompt;
+    return item.prompt + '\n' + item.date + ' - ' + item.source
 }
 
 const generateImage = async () => {
@@ -68,6 +76,7 @@ const loadData = async () => {
 
     resetVariables();
     dataArray.push(...data);
+    console.log(JSON.stringify(dataArray));
 }
 
 const getImageCount = async (): Promise<number | undefined> => {
@@ -101,7 +110,7 @@ const pollData = () => {
 const enableHorizontalScroll = () => {
     const scrollable = document.getElementById("scrollable");
     scrollable?.addEventListener("wheel", (event) => {
-        event.preventDefault();
+        // event.preventDefault();
         const scrollAmount = event.deltaY || event.deltaX;
         scrollable.scrollLeft += scrollAmount;
     }, { passive: true });
