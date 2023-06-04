@@ -218,7 +218,25 @@ onMounted(async () => {
     display: flex;
     white-space: nowrap;
     height: 100vh;
-    overflow: hidden;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #222;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
 }
 
 .item {
