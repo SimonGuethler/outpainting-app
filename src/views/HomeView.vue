@@ -1,13 +1,13 @@
 <template>
-    <main id="scrollable" class="container">
+    <main id="scrollable" class="container page-fade-in">
         <div v-for="item of dataArray" :key="item.prompt"
              class="item" style="display: flex; flex-direction: column; align-items: center"
         >
             <va-image
-                :class="{imageBorder: showBorder}"
+                class="image"
+                :class="{ imageBorder: showBorder }"
                 :src="item.image"
                 :alt="item.prompt"
-                style="height: 75vh; width: 75vh;"
                 lazy
             />
             <div class="text">
@@ -34,70 +34,35 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import axios from 'axios';
+import { onMounted, ref } from 'vue';
+import {
+    enableHorizontalScroll,
+    scrollAmount,
+    ScrollDirection,
+    scrollToLeft,
+    scrollToRight,
+    startScroll,
+    stopScroll
+} from '@/composables/scrolling';
+import { useDataStore } from '@/stores/dataStore';
+import { storeToRefs } from 'pinia';
 
-const imageCount = ref<number>(0);
+const dataStore = useDataStore();
+const {
+    loadData,
+    getImageCount,
+    generateImage,
+    reset,
+    resetVariables,
+    getTitle
+} = dataStore;
+const {
+    imageCount,
+    dataArray
+} = storeToRefs(dataStore);
 
 const showDevBar = ref<boolean>(false);
 const showBorder = ref<boolean>(false);
-
-const dataArray = reactive<DataType[]>([])
-
-const axiosInstance = axios.create({
-    baseURL: 'http://10.40.2.30:8000',
-    // baseURL: 'http://localhost:8000',
-});
-
-interface DataType {
-    image: string;
-    prompt: string;
-    date: string;
-    source: string;
-}
-
-const getTitle = (item: DataType) => {
-    if (!item) return '';
-    if (item.prompt === '-') return item.prompt;
-    return item.prompt + '\n' + item.date + ' - ' + item.source
-}
-
-const generateImage = async () => {
-    await axiosInstance.get('generate').catch()
-    resetVariables();
-    await init();
-}
-
-const loadData = async () => {
-    const response = await axiosInstance.get('data').catch(() => {
-    })
-    if (!response || !response.data) return;
-    const data: DataType[] = response.data;
-
-    resetVariables();
-    dataArray.push(...data);
-    console.log(JSON.stringify(dataArray));
-}
-
-const getImageCount = async (): Promise<number | undefined> => {
-    const response = await axiosInstance.get('image_count').catch(() => {
-    })
-    if (!response || !response.data) return;
-
-    const count = Number(response.data);
-    imageCount.value = count;
-
-    return count;
-}
-
-const reset = async () => {
-    resetVariables();
-    await axiosInstance.get('reset').catch()
-}
-
-const resetVariables = () => {
-    dataArray.splice(0);
-}
 
 const pollData = () => {
     setInterval(async () => {
@@ -107,62 +72,6 @@ const pollData = () => {
     }, 5000);
 }
 
-const enableHorizontalScroll = () => {
-    const scrollable = document.getElementById("scrollable");
-    scrollable?.addEventListener("wheel", (event) => {
-        // event.preventDefault();
-        const scrollAmount = event.deltaY || event.deltaX;
-        scrollable.scrollLeft += scrollAmount;
-    }, { passive: true });
-}
-
-const scrollToRight = () => {
-    const scrollable = document.getElementById("scrollable");
-    if (!scrollable) return;
-    scrollable.scrollLeft = scrollable.scrollWidth;
-}
-
-const scrollToLeft = () => {
-    const scrollable = document.getElementById("scrollable");
-    if (!scrollable) return;
-    scrollable.scrollLeft = 0;
-}
-
-const scrollAmount = (amount: number) => {
-    const scrollable = document.getElementById("scrollable");
-    if (!scrollable) return;
-    scrollable.scrollLeft += amount;
-}
-
-enum ScrollDirection {
-    Left,
-    Right,
-}
-
-let requestId = 0;
-
-const startScroll = (direction: ScrollDirection) => {
-    if (requestId) return;
-
-    const container = document.getElementById("scrollable")!;
-    const scrollAmount = 1;
-
-    const scroll = () => {
-        if (direction === ScrollDirection.Left) {
-            container.scrollLeft -= scrollAmount;
-        } else if (direction === ScrollDirection.Right) {
-            container.scrollLeft += scrollAmount;
-        }
-        requestId = requestAnimationFrame(scroll);
-    }
-
-    scroll();
-}
-
-function stopScroll() {
-    cancelAnimationFrame(requestId);
-    requestId = 0;
-}
 
 const addKeyShortcuts = () => {
     const scrollArrowAmount = 700;
@@ -208,6 +117,7 @@ const addKeyShortcuts = () => {
 
 const init = async () => {
     await loadData();
+    await getImageCount();
     scrollToRight();
 }
 
@@ -254,9 +164,9 @@ onMounted(async () => {
 }
 
 .text {
-    font-size: 2.5rem;
-    padding-inline: 2rem;
-    margin-top: 2rem;
+    font-size: 4vh;
+    padding-inline: 1rem;
+    margin-top: 2vh;
     color: #f6dab6;
     white-space: pre-wrap;
     text-align: center;
@@ -271,6 +181,7 @@ onMounted(async () => {
     transform: translateX(-50%);
     padding: 0.5rem;
     border: 1px solid #f6dab6;
+    background-color: #222222;
     border-bottom: none;
     border-radius: 10px 10px 0 0;
 }
@@ -284,6 +195,24 @@ onMounted(async () => {
 
 .imageBorder {
     border: 1px solid red;
+}
+
+.image {
+    height: 75vh;
+    width: 75vh;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.page-fade-in {
+    animation: fade-in 0.5s ease-in-out;
 }
 
 </style>

@@ -12,6 +12,9 @@
             "ESNext",
             "dom"
         ],
+        "types": [
+            "node"
+        ],
         "baseUrl": ".",
         "paths": {
             "@/*": [
