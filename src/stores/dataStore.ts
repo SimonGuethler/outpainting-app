@@ -1,12 +1,14 @@
 import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { axiosInstance } from '@/composables/api';
+import { formatDate } from '@/composables/date';
 
 export interface DataType {
     image: string;
     prompt: string;
     date: string;
     source: string;
+    headline: string;
 }
 
 export const useDataStore = defineStore('data', () => {
@@ -48,9 +50,14 @@ export const useDataStore = defineStore('data', () => {
 
     const getTitle = (item: DataType) => {
         if (!item) return '';
-        if (item.prompt === '-') return item.prompt;
-        return '' + item.prompt + '\n' + item.date + ' - ' + item.source
+        return item.headline
     }
 
-    return { loadData, reset, resetVariables, getImageCount, generateImage, getTitle, imageCount, dataArray }
+    const getSource = (item: DataType) => {
+        if (!item) return '';
+        if (item.prompt === '-') return '';
+        return formatDate(item.date) + ' - ' + item.source
+    }
+
+    return { loadData, reset, resetVariables, getImageCount, generateImage, getTitle, getSource, imageCount, dataArray }
 })

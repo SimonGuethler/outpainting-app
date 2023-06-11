@@ -10,8 +10,11 @@
                 :alt="item.prompt"
                 lazy
             />
-            <div class="text">
+            <div class="text-font prompt">
                 {{ getTitle(item) }}
+            </div>
+            <div class="text-font source">
+                {{ getSource(item) }}
             </div>
         </div>
     </main>
@@ -54,7 +57,8 @@ const {
     generateImage,
     reset,
     resetVariables,
-    getTitle
+    getSource,
+    getTitle,
 } = dataStore;
 const {
     imageCount,
@@ -163,15 +167,27 @@ onMounted(async () => {
     width: 75vh;
 }
 
-.text {
-    font-size: 4vh;
-    padding-inline: 1rem;
-    margin-top: 2vh;
+.text-font {
     color: #f6dab6;
     white-space: pre-wrap;
     text-align: center;
     line-height: 1.25;
     font-family: 'Newsreader', serif;
+    font-style: italic;
+    font-weight: 200;
+}
+
+.prompt {
+    font-size: 4vh;
+    padding-inline: 1rem;
+    margin-top: 2vh;
+    font-weight: 400;
+}
+
+.source {
+    font-size: 3vh;
+    padding-inline: 0.5rem;
+    margin-top: 1vh;
 }
 
 .bar {
