@@ -21,8 +21,7 @@ export const useDataStore = defineStore('data', () => {
         })
         if (!response || !response.data) return;
         const data: DataType[] = response.data;
-
-        resetVariables();
+        dataArray.splice(0);
         dataArray.push(...data);
     }
 
