@@ -55,6 +55,8 @@ export const useDataStore = defineStore('data', () => {
     const getSource = (item: DataType) => {
         if (!item) return '';
         if (item.prompt === '-') return '';
+        if (item.date === '') return item.source;
+        if (item.source === '') return formatDate(item.date);
         return formatDate(item.date) + ' - ' + item.source
     }
 
