@@ -1,6 +1,6 @@
 import { reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { axiosInstance } from '@/composables/api';
+import { axiosInstanceApi, axiosInstanceServe } from '@/composables/api';
 import { formatDate } from '@/composables/date';
 
 export interface DataType {
@@ -16,9 +16,15 @@ export const useDataStore = defineStore('data', () => {
     const imageCount = ref<number>(0);
     const dataArray = reactive<DataType[]>([])
 
-    const loadData = async () => {
-        const response = await axiosInstance.get('data').catch(() => {
-        })
+    const loadData = async (source: string = '') => {
+        let response;
+        if (source === '') {
+            response = await axiosInstanceApi.get('data').catch(() => {
+            })
+        } else {
+            response = await axiosInstanceServe.get('data/' + source).catch(() => {
+            })
+        }
         if (!response || !response.data) return;
         const data: DataType[] = response.data;
         dataArray.splice(0);
@@ -27,11 +33,11 @@ export const useDataStore = defineStore('data', () => {
 
     const reset = async () => {
         resetVariables();
-        await axiosInstance.get('reset').catch()
+        await axiosInstanceApi.get('reset').catch()
     }
 
     const getImageCount = async () => {
-        const response = await axiosInstance.get('image_count').catch(() => {
+        const response = await axiosInstanceApi.get('image_count').catch(() => {
         })
         if (!response || !response.data) return;
 
@@ -39,7 +45,7 @@ export const useDataStore = defineStore('data', () => {
     }
 
     const generateImage = async () => {
-        await axiosInstance.get('generate').catch()
+        await axiosInstanceApi.get('generate').catch()
     }
 
     const resetVariables = () => {

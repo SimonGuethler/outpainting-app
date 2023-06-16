@@ -1,14 +1,14 @@
 <template>
-    <main id="scrollable" class="container page-fade-in">
+    <div id="scrollable" class="container page-fade-in">
         <div v-for="item of dataArray" :key="item.prompt"
              class="item" style="display: flex; flex-direction: column; align-items: center"
         >
-            <va-image
+            <img
                 class="image"
                 :class="{ imageBorder: showBorder }"
                 :src="item.image"
                 :alt="item.prompt"
-                lazy
+                loading="lazy"
             />
             <div class="text-font prompt">
                 {{ getTitle(item) }}
@@ -17,22 +17,6 @@
                 {{ getSource(item) }}
             </div>
         </div>
-    </main>
-    <div v-if="showDevBar" class="bar">
-        <va-button
-            class="button"
-            color="danger"
-            @click="reset"
-        >
-            Reset
-        </va-button>
-        <va-button
-            class="button"
-            color="dark"
-            @click="generateImage"
-        >
-            Generate
-        </va-button>
     </div>
 </template>
 
@@ -50,12 +34,17 @@ import {
 import { useDataStore } from '@/stores/dataStore';
 import { storeToRefs } from 'pinia';
 
+const props = defineProps({
+    project: {
+        type: String,
+        default: '',
+    },
+});
+
 const dataStore = useDataStore();
 const {
     loadData,
     getImageCount,
-    generateImage,
-    reset,
     resetVariables,
     getSource,
     getTitle,
@@ -65,7 +54,7 @@ const {
     dataArray
 } = storeToRefs(dataStore);
 
-const showDevBar = ref<boolean>(false);
+
 const showBorder = ref<boolean>(false);
 
 const pollData = () => {
@@ -76,14 +65,10 @@ const pollData = () => {
     }, 5000);
 }
 
-
 const addKeyShortcuts = () => {
     const scrollArrowAmount = 700;
 
     const handleKeyPress = (event: { keyCode: number; }) => {
-        if (event.keyCode === 84) { // T
-            showDevBar.value = !showDevBar.value;
-        }
         if (event.keyCode === 81) { // Q
             stopScroll();
             scrollToLeft();
@@ -127,10 +112,16 @@ const init = async () => {
 
 onMounted(async () => {
     resetVariables();
-    await init();
+
+    if (props.project === '') {
+        await init();
+        pollData()
+    } else {
+        await loadData(props.project);
+        scrollToRight();
+    }
     enableHorizontalScroll();
     addKeyShortcuts();
-    pollData();
 });
 
 </script>
@@ -188,25 +179,6 @@ onMounted(async () => {
     font-size: 3vh;
     padding-inline: 0.5rem;
     margin-top: 1vh;
-}
-
-.bar {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 0.5rem;
-    border: 1px solid #f6dab6;
-    background-color: #222222;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0;
-}
-
-.button {
-    height: 2rem;
-    width: 7rem;
-    margin-inline: 0.25rem;
-    --va-button-font-size: 1.25rem;
 }
 
 .imageBorder {
