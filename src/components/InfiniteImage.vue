@@ -4,9 +4,8 @@
             <img
                 class="image"
                 :class="{ imageBorder: showBorder }"
-                :src="item.image"
+                v-lazy="item.image"
                 :alt="item.prompt"
-                loading="lazy"
             />
             <div class="text-font prompt">
                 {{ getTitle(item) }}
