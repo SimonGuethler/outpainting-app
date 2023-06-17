@@ -14,7 +14,7 @@
             <template v-for="(project, index) in projects" :key="index">
                 <router-link
                     class="link"
-                    :to="'/base/' + project"
+                    :to="'/outpainting/' + project"
                 >
                     {{ project }}
                 </router-link>
