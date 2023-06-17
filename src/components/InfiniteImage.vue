@@ -1,8 +1,6 @@
 <template>
     <div id="scrollable" class="container page-fade-in">
-        <div v-for="item of dataArray" :key="item.prompt"
-             class="item" style="display: flex; flex-direction: column; align-items: center"
-        >
+        <div v-for="item of dataArray" :key="item.prompt" class="item">
             <img
                 class="image"
                 :class="{ imageBorder: showBorder }"
@@ -154,6 +152,9 @@ onMounted(async () => {
 }
 
 .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     height: 100%;
     width: 75vh;
 }
