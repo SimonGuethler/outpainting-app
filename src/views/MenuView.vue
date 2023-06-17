@@ -4,6 +4,7 @@
 
         <div class="list">
             <router-link
+                v-if="addApiSection"
                 class="link"
                 :to="'/base/' + defaultProjects[0].link"
             >
@@ -37,6 +38,7 @@ const defaultProjects = [
 ];
 
 const projects = reactive<string[]>([])
+const addApiSection = import.meta.env.VITE_ADD_API_SECTION === 'true';
 
 const loadProjects = async () => {
     const response = await axiosInstanceServe.get('/folders');
