@@ -16,7 +16,7 @@
                     class="link"
                     :to="'/outpainting/' + project"
                 >
-                    {{ project }}
+                    {{ getProject(project) }}
                 </router-link>
             </template>
         </div>
@@ -44,6 +44,10 @@ const loadProjects = async () => {
     const response = await axiosInstanceServe.get('/folders');
     projects.slice();
     projects.push(...response.data);
+};
+
+const getProject = (project: string) => {
+    return project.replace(/[-_]/g, ' ');
 };
 
 onMounted(async () => {
