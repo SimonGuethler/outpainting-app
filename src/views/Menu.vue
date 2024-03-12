@@ -96,7 +96,7 @@ onMounted(async () => {
     border: 1px solid #f6dab6;
     border-radius: 20px;
 
-    width: 25rem;
+    width: min(25rem, 80vw);
     height: 5rem;
 
     text-decoration: none;

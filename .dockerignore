@@ -3,3 +3,5 @@ docker-compose.yml
 node_modules
 dist
 README.md
+.idea
+.vscode
