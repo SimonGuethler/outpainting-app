@@ -1,9 +1,9 @@
-version: "3"
-name: stsiguet
-
 services:
   outpainting-app:
-    build: .
+    container_name: outpainting-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: registry.guethler.dev/outpainting-app:latest
     ports:
       - "8080:8080"
-    container_name: stsiguet-outpainting-app
