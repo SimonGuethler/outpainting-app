@@ -18,8 +18,10 @@
 
 ## Project Setup
 
+Use Node.js 26 LTS to match the Docker build.
+
 ```sh
-npm install
+npm ci
 ```
 
 ### Compile and Hot-Reload for Development

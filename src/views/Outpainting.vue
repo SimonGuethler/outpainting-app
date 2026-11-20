@@ -10,6 +10,8 @@ import DevBar from '@/components/DevBar.vue';
 import InfiniteImage from '@/components/InfiniteImage.vue';
 import { useRoute } from 'vue-router';
 
+defineOptions({ name: 'OutpaintingView' });
+
 const route = useRoute();
 
 const project = route.params.projectName as string || '';

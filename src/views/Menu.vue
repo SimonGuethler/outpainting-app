@@ -30,6 +30,8 @@
 import { axiosInstanceServe } from '@/composables/api';
 import { onMounted, reactive } from 'vue';
 
+defineOptions({ name: 'MenuView' });
+
 const defaultProjects = [
     {
         title: 'News',
