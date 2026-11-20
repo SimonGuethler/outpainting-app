@@ -4,7 +4,7 @@
             <img
                 class="image"
                 :class="{ imageBorder: showBorder }"
-                v-lazy="item.image"
+                v-lazy.scrollable="item.image"
                 :alt="item.prompt"
             />
             <div class="text-font prompt">
